@@ -31,7 +31,7 @@ const test = ref(
 // Fetch responses from API
 const fetchResponses = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/responses/');
+    const response = await axios.get('https://desirable-transformation-production.up.railway.app/api/responses/');
     console.log('API Response:', response.data);
 
     // Map the new response data
