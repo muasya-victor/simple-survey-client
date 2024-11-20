@@ -129,6 +129,7 @@ import { ref, reactive, computed, onMounted } from 'vue';
 import api from '@/services/api';
 import { ElNotification } from 'element-plus';
 import {useRouter} from "vue-router";
+import router from "@/router/index.js";
 
 export default {
   setup() {
@@ -163,6 +164,7 @@ export default {
               text: question.text,
               description: question.description,
               required: question.required,
+              type: question.type,
             },
             answer: question.type === 'choice' && question.multiple ? [] : '',
           };
@@ -207,17 +209,18 @@ export default {
         // Format the payload properly
         const formattedPayload = {
           responses: Object.values(formData).map((data) => ({
-            "question": data.question.id, // Assuming question is an object with an id
-            "response_text": data.question.type === 'text' ? data.answer : '',
-            "selected_options": data.question.type !== 'text'
+            "question": data.question.id,
+            "response_text": data.question.type === 'short_text' || data.question.type === 'long_text'|| data.question.type === 'email' ? (data.answer || '') : '',
+            "selected_options":data.question.type === 'choice'
                 ? (Array.isArray(data.answer)
-                        ? data.answer.map(option => option.id) // If multiple options, map to their ids
-                        : [data.answer.id] // If single option, extract the id
+                        ? data.answer.map(option => option.id)
+                        : [data.answer.id]
                 ).filter(Boolean)
-                : [] // For text-based questions, leave selected_options as an empty array
+                : []
           }))
         };
 
+        console.log('form data:', formData);
         console.log('Submitting payload:', formattedPayload);
 
         const response = await api.post('responses/', formattedPayload);
@@ -229,7 +232,7 @@ export default {
           type: 'success',
         });
 
-        const router = useRouter()
+
         router.push({name:'responses'})
 
         // Reset form
@@ -273,12 +276,7 @@ export default {
           }, index * 200); // Delay each notification by 2 seconds (index * 2000ms)
         });
       } else {
-        // Default error message if no specific errors are found
-        ElNotification({
-          title: 'Error',
-          message: 'There was an error submitting your survey.',
-          type: 'error',
-        });
+        console.log('error')
       }
       }
     }
