@@ -208,7 +208,7 @@ export default {
         const formattedPayload = {
           responses: Object.values(formData).map((data) => ({
             "question": data.question.id, // Assuming question is an object with an id
-            "response_text": data.question.type === 'text' ? data.answer : null,
+            "response_text": data.question.type === 'text' ? data.answer : '',
             "selected_options": data.question.type !== 'text'
                 ? (Array.isArray(data.answer)
                         ? data.answer.map(option => option.id) // If multiple options, map to their ids
